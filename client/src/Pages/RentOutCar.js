@@ -1,0 +1,192 @@
+import React, { useState, useEffect } from 'react';
+import { Carousel } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { Sidebar } from '../components/Sidebar/Sidebar';
+import API from '../services/api';
+
+import './rent.css';
+
+
+
+const Info = (props) => {
+  // Format the dates for display
+  const formattedAvailableDate = new Date(props.avail).toLocaleDateString();
+  const formattedDropDate = new Date(props.drop).toLocaleDateString();
+
+
+  // State to manage the text and color of the button
+  const [buttonText, setButtonText] = useState("Rent Now");
+  const [isClicked, setIsClicked] = useState(false);
+
+  const handleButtonClick = () => {
+    setButtonText("Car owner will contact you");
+    setIsClicked(true);
+  }
+
+  // Conditionally set the button class based on whether it has been clicked
+  const buttonClass = isClicked ? "btn btn-success" : "btn btn-primary";
+
+
+  return (
+    <div className='card'>
+      <img src={props.url} alt={props.name} className="card-image" />
+      <div className="card-content">
+        <p id="name">{props.name}</p>
+        <p><strong>car condition:</strong> {props.desc}</p>
+        <p><strong>City:</strong> {props.city}</p>
+        <p><strong>Available Date:</strong> {formattedAvailableDate}</p>
+        <p><strong>Drop Date and Time:</strong> {formattedDropDate}</p>
+      </div>
+      <button className={buttonClass} onClick={handleButtonClick}>{buttonText}</button>
+    </div>
+  );
+};
+
+
+
+export const RentOutCar = () => {
+
+  const [selectedCity, setSelectedCity] = useState('');
+  const [availableDate, setAvailableDate] = useState('');
+  const [dropDate, setDropDate] = useState('');
+  const [cars, setCars] = useState([]);
+
+  useEffect(() => {
+
+    const fetchCars = () => {
+      let apiUrl = 'http://localhost:8081/cars/allCars';
+      const params = [];
+
+      if (selectedCity) {
+        params.push(`city=${selectedCity}`);
+      }
+      if (availableDate && dropDate) {
+        params.push(`available=${availableDate}`);
+        params.push(`drop=${dropDate}`);
+      }
+
+      if (params.length > 0) {
+        apiUrl += `?${params.join('&')}`;
+      }
+
+      API.get(apiUrl)
+        //   .then((response) => response.json())
+        .then((response) => {
+          console.log(response.data);
+          setCars(response.data);
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+    };
+
+    fetchCars();
+  }, [selectedCity, availableDate, dropDate]);
+
+
+  const handleCityChange = (event) => {
+    setSelectedCity(event.target.value);
+  };
+
+
+
+  const handleAvailableDateChange = (event) => {
+    const selectedDate = event.target.value;
+    // Convert the selected date to ISO 8601 format (without time and timezone information)
+    const isoDate = new Date(selectedDate).toISOString().split('T')[0];
+    setAvailableDate(isoDate);
+  };
+
+  const handleDropDateChange = (event) => {
+    const selectedDate = event.target.value;
+    // Convert the selected date to ISO 8601 format (without time and timezone information)
+    const isoDate = new Date(selectedDate).toISOString().split('T')[0];
+    setDropDate(isoDate);
+  };
+
+  return (
+   
+
+    <div className="container-fluid">
+      <div className="row">
+        <Sidebar />
+
+        <div className="col-10">
+          <div className="p-3 border-bottom mb-4">
+            <h3>Find your car</h3>
+          </div>
+          <div className="container mt-4">
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label" htmlFor="citySelect">Select City</label>
+                <select className="form-select mb-3" id="citySelect" onChange={handleCityChange}>
+                  <option value="">Select City</option>
+                  <option value="Surrey">Surrey</option>
+                  <option value="New Westminster">New Westminster</option>
+                  <option value="Burnaby">Burnaby</option>
+                  <option value="Vancouver">Vancouver</option>
+                  <option value="Richmond">Richmond</option>
+                </select>
+              </div>
+              <div className="col-md-3 mb-3">
+                <label className="form-label" htmlFor="available">Available Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  onChange={handleAvailableDateChange}
+                  value={availableDate}
+                  id="available"
+                />
+              </div>
+              <div className="col-md-3 mb-3">
+                <label className="form-label" htmlFor="drop">Drop Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  onChange={handleDropDateChange}
+                  value={dropDate}
+                  id="drop"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 mb-4">
+            <Carousel>
+            <Carousel.Item>
+                <img className="d-block w-50" src="/SUV.PNG" alt="SUV" />
+            </Carousel.Item>
+            <Carousel.Item>
+                <img className="d-block w-50" src="/sedan.PNG" alt="Sedan" />
+            </Carousel.Item>
+            <Carousel.Item>
+                <img className="d-block w-50" src="/offroad.PNG" alt="Offroad" />
+            </Carousel.Item>
+            <Carousel.Item>
+                <img className="d-block w-50" src="/hbag.PNG" alt="Hbag" />
+            </Carousel.Item>
+            </Carousel>
+        </div>
+
+          <div className="row row-cols-1 row-cols-md-3 g-4 cars-result">
+            {cars.map((car) => (
+              <Info
+                key={car._id}
+                url={car.carImageLink}
+                name={car.carName}
+                desc={car.desc}
+                avail={car.available}
+                drop={car.DropDate}
+                city={car.city}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  );
+};
+
+

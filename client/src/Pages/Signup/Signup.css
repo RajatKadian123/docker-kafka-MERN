@@ -1,0 +1,12 @@
+.sideImg {
+    height: '100vh';
+    overflow: hidden;
+}
+
+.sideImg img {
+    height: 100vh;
+}
+
+.signup-form input[type="text"] {
+    padding: 6px 12px 6px 12px;
+}
