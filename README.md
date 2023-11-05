@@ -1,23 +1,55 @@
-# Batmobile sharing
-### CSIS-3380 final-project
+# DOCKERIZE MERN APPLICATION WITH KAFKA
 
 ## How to use
 1. Clone the repo
-    `git clone https://github.com/CSIS-3380-001/final-project`
+    `git clone https://github.com/RajatKadian/DOCKER-MERN-KAFKA-LIVELOCATION.git`
 
-### Backend
-1. Install server dependencies
-    `cd ./server && npm i`
-2. Create `.env` file inside `./server` directory ( `./server/.env`)
-3. Add following lines in the file
-    ```
-    PORT=8081
+### START CONTAINER
 
-    DB_URI="mongodb+srv://root:VRPd3ICLK6juCQCa@cluster0.dg4ocjz.mongodb.net/?retryWrites=true&w=majority"
-    ```
-4. Start server using `npm start`
+1. Build the container
+   docker-compose build
 
-### Frontend
-1. Install client dependencies
-    `cd ./client && npm i`
-2. Start server usign `npm start`
+   ![image](https://github.com/RajatKadian/DOCKER-MERN-KAFKA-LIVELOCATION/assets/55406990/32ae67aa-6305-4eb9-b1f5-a20510b4eefa)
+
+
+3. Start the container
+   docker-compose up
+
+   ![image](https://github.com/RajatKadian/DOCKER-MERN-KAFKA-LIVELOCATION/assets/55406990/aa6f4b4b-06b9-457b-9efb-8fc7e8a2e41c)
+
+   ![image](https://github.com/RajatKadian/DOCKER-MERN-KAFKA-LIVELOCATION/assets/55406990/14c11a8c-cb68-4d5f-aaf6-59e4b2d8e2ad)
+
+   ![image](https://github.com/RajatKadian/DOCKER-MERN-KAFKA-LIVELOCATION/assets/55406990/ea18eb6b-26e5-42a0-bcec-ffe1db772ccd)
+
+
+
+   
+
+
+
+
+### Start Kafka
+
+1.  Run Zookeeper on port 2181
+    docker run -p 2181:2181 zookeeper
+
+2. Run Kafka Container  (Change 10.0.0.232 to your private IP)
+
+docker run -d -p 9092:9092 `
+-e KAFKA_ZOOKEEPER_CONNECT=10.0.0.232:2181 `
+-e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://10.0.0.232:9092 `
+-e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 `
+confluentinc/cp-kafka
+
+
+3. node consumer.js user-1
+
+   ![image](https://github.com/RajatKadian/DOCKER-MERN-KAFKA-LIVELOCATION/assets/55406990/943be40d-56ce-42c7-8f7d-7bdadd0870c6)
+
+
+5. node producer.js
+
+   (you get a prompt enter name and location for the car rider i.e. north or south )
+
+   ![image](https://github.com/RajatKadian/DOCKER-MERN-KAFKA-LIVELOCATION/assets/55406990/705fceeb-212f-4dd7-bc2c-c85decbd783f)
+
